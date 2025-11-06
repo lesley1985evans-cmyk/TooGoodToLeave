@@ -87,7 +87,7 @@
     .bottom-nav .icon{font-size:18px; line-height:1}
 
     @media(min-width:900px){ .bottom-nav{display:none} }
-    @media(max-width:899px){ header nav.primary{display:none} }
+    /* show main nav on all screen sizes */
   </style>
 </head>
 <body>
@@ -96,7 +96,7 @@
       <div class="brand">
         <h1>Too Good To Leave</h1>
       </div>
-      <p class="sub">Cookbook of simple, low‑cost recipes from food‑bank staples & surplus.</p>
+      <p class="sub">Cookbook of simple, low‑cost recipes from food‑bank staples & surplus. Public site is <strong>read‑only</strong>.</p>
       <nav class="primary" aria-label="Main">
         <a href="#home" data-nav>Home</a>
         <a href="#recipes" data-nav>Recipes</a>
@@ -132,7 +132,7 @@
         <button id="btnClear">Clear</button>
       </div>
       <div id="results" class="grid" style="margin-top:14px"></div>
-      <div id="empty" class="empty" hidden>No recipes yet. Drop us an email to make a suggestion or request.</div>
+      <div id="empty" class="empty" hidden>No recipes yet. Add a <code>recipes.json</code> file to your site folder.</div>
     </section>
 
     <!-- TIPS -->
@@ -173,7 +173,8 @@
   </main>
 
   <footer>
-    Too Good To Leave
+    Tip: press <span class="kbd">/</span> on any page to focus the search (on the Recipes page).
+    <br/>This site is view‑only — to update recipes, replace <code>recipes.json</code> in the repo.
   </footer>
 
   <!-- recipe card template -->
