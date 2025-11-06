@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Too Good To Leave — Cookbook</title>
+  <meta name="description" content="Browse simple, low-cost recipes made from food‑bank staples and community‑hub surplus. Search by ingredients or name." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      /* Fresh neutral cookbook palette */
+      --bg:#f8f5ee;            /* ivory page background */
+      --paper:#ffffff;         /* clean paper */
+      --paper2:#fcfaf4;        /* subtle paper shade */
+      --ink:#2f2b26;           /* warm dark text */
+      --muted:#6b6158;         /* muted brown-grey */
+      --accent:#5fa677;        /* sage green */
+      --accent-strong:#4a8f63; /* deeper sage */
+      --accent-soft:#e4f1e9;   /* pale sage wash */
+      --rule:#e9e0cf;          /* divider rule */
+      --shadow:rgba(0,0,0,.12);/* soft daylight shadow */
+      --ui-bg:#fffdf8;         /* light panel */
+      --ui-border:#e5dccb;     /* light border */
+      --ui-ink:#2f2b26;        /* ui text on light */
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0; background:var(--bg); color:var(--ui-ink); font:16px/1.6 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial}
+
+    header{position:sticky; top:0; z-index:10; background:linear-gradient(180deg, #ffffffd8, #ffffffb0); backdrop-filter:blur(8px); border-bottom:1px solid var(--ui-border)}
+    .container{max-width:980px; margin:0 auto; padding:16px}
+    .brand{display:flex; align-items:baseline; gap:10px}
+    .brand h1{margin:0; font:700 28px/1.1 "Playfair Display", Georgia, serif; letter-spacing:.2px; color:var(--ink)}
+    .brand .sub{margin:2px 0 0; color:var(--muted); font-size:14px}
+
+    /* NAV */
+    nav.primary{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap}
+    nav.primary a{display:inline-block; padding:12px 14px; border-radius:999px; border:1px solid var(--ui-border); background:#ffffff; color:var(--ink); text-decoration:none; font-weight:600}
+    nav.primary a.active{background:var(--accent); color:#ffffff; border-color:var(--accent-strong)}
+
+    /* search bar (only on Recipes page) */
+    .search{display:flex; gap:10px; margin-top:10px}
+    .search input{flex:1; padding:12px 14px; border-radius:12px; border:1px solid var(--ui-border); background:#ffffff; color:var(--ink)}
+    .search input:focus{outline:none; box-shadow:0 0 0 3px rgba(95,166,119,.25)}
+    .search button{padding:12px 16px; border-radius:12px; border:1px solid var(--ui-border); background:#ffffff; color:var(--ink); cursor:pointer}
+    .search button:hover{filter:brightness(0.98)}
+    .search button:first-of-type{background:var(--accent); color:#fff; border-color:var(--accent-strong)}
+
+    main{padding:16px; padding-bottom:88px} /* space for mobile nav */
+    section.pageview{display:none}
+    section.pageview.active{display:block}
+
+    /* book grid */
+    .grid{display:grid; gap:18px; grid-template-columns:1fr}
+    @media(min-width:900px){ .grid{ grid-template-columns:1fr 1fr } }
+
+    /* book page card */
+    .page{position:relative; background:linear-gradient(180deg,var(--paper),var(--paper2)); color:var(--ink); border:1px solid #efe7d8; border-radius:12px; padding:22px 22px 18px; box-shadow:0 12px 24px var(--shadow)}
+    .page:before{content:""; position:absolute; left:0; top:0; bottom:0; width:18px; border-top-left-radius:12px; border-bottom-left-radius:12px; background:linear-gradient(90deg, rgba(0,0,0,.04), rgba(0,0,0,0))}
+    .title{font:700 24px/1.2 "Playfair Display", Georgia, serif; margin:0 0 6px}
+    .meta{color:#7a6f66; font:600 13px/1 Inter, system-ui; letter-spacing:.2px; margin:0 0 12px}
+    .rule{height:1px; background:var(--rule); margin:10px 0}
+
+    .ingredients{margin:8px 0 10px 0; padding:0; list-style:none}
+    .ingredients li{padding:6px 10px; margin:4px 0; background:repeating-linear-gradient(180deg, transparent 0 27px, var(--rule) 27px 28px); border-radius:8px}
+
+    .method{margin:12px 0 0; line-height:1.75; font-size:16px}
+    .method .drop{float:left; font:700 40px/1 "Playfair Display"; padding:4px 10px 0 4px; color:var(--accent-strong)}
+
+    .badge{display:inline-block; padding:4px 8px; border-radius:999px; font:600 12px/1 Inter; color:#244a34; background:var(--accent-soft); border:1px solid #c3e4d1; margin-right:6px}
+
+    .empty{margin:18px 0; padding:18px; text-align:center; color:#7c7269; border:2px dashed var(--ui-border); border-radius:12px}
+
+    footer{color:var(--muted); font-size:13px; text-align:center; padding:30px 0 60px}
+    .kbd{font-family:ui-monospace,Menlo,Consolas,monospace; background:#ffffff; border:1px solid var(--ui-border); padding:2px 6px; border-radius:6px}
+    .lead{font-size:18px; color:#5c524a}
+    .panel{background:var(--ui-bg); border:1px solid var(--ui-border); border-radius:12px; padding:14px; margin:14px 0}
+    .list{margin:0; padding-left:18px}
+
+    /* Mobile app-like bottom nav (light) */
+    .bottom-nav{position:fixed; bottom:0; left:0; right:0; z-index:20; background:#fffffff2; backdrop-filter:blur(8px); border-top:1px solid var(--ui-border)}
+    .bottom-nav .wrap{max-width:980px; margin:0 auto; padding:10px 12px; display:grid; grid-template-columns:repeat(5,1fr); gap:8px}
+    .bottom-nav a, .bottom-nav button{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:10px 8px; border-radius:12px; border:1px solid var(--ui-border); background:#ffffff; color:var(--ink); text-decoration:none; font-weight:600; font-size:12px}
+    .bottom-nav a.active{background:var(--accent); color:#ffffff; border-color:var(--accent-strong)}
+    .bottom-nav .icon{font-size:18px; line-height:1}
+
+    @media(min-width:900px){ .bottom-nav{display:none} }
+    @media(max-width:899px){ header nav.primary{display:none} }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="brand">
+        <h1>Too Good To Leave</h1>
+      </div>
+      <p class="sub">Cookbook of simple, low‑cost recipes from food‑bank staples & surplus.</p>
+      <nav class="primary" aria-label="Main">
+        <a href="#home" data-nav>Home</a>
+        <a href="#recipes" data-nav>Recipes</a>
+        <a href="#tips" data-nav>Pantry Tips</a>
+        <a href="#resources" data-nav>Community & Resources</a>
+        <a href="#about" data-nav>About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- HOME -->
+    <section id="home" class="pageview active">
+      <div class="panel">
+        <p class="lead"><strong>Too Good To Leave</strong> helps you turn food‑bank and community‑hub items into proper meals. Browse the cookbook, search by ingredients, and share the site with anyone — it’s fast and free.</p>
+      </div>
+      <div class="panel">
+        <h2>How it works</h2>
+        <ol class="list">
+          <li>Open the <strong>Recipes</strong> page.</li>
+          <li>Type ingredients you have (e.g. <em>pasta, tuna, tomatoes</em>).</li>
+          <li>Pick a recipe and cook!</li>
+        </ol>
+        <p class="sub">Want to suggest a recipe? Email <a href="mailto:hello@example.com">hello@example.com</a> and we’ll add it.</p>
+      </div>
+    </section>
+
+    <!-- RECIPES -->
+    <section id="recipes" class="pageview">
+      <div class="search" role="search">
+        <input id="q" placeholder="Search recipes or ingredients (e.g. pasta, tuna)…" aria-label="Search recipes" />
+        <button id="btnSearch">Search</button>
+        <button id="btnClear">Clear</button>
+      </div>
+      <div id="results" class="grid" style="margin-top:14px"></div>
+      <div id="empty" class="empty" hidden>No recipes yet. Drop us an email to make a suggestion or request.</div>
+    </section>
+
+    <!-- TIPS -->
+    <section id="tips" class="pageview">
+      <div class="panel">
+        <h2>Pantry & money‑saving tips</h2>
+        <ul class="list">
+          <li>Prioritise fresh items first (salad, bread, milk) — then shelf‑stable.</li>
+          <li>Batch cook simple bases (rice, pasta, tomato sauce) to mix & match.</li>
+          <li>Use herbs & spices to lift staples: curry powder, garlic, paprika.</li>
+          <li>Microwave shortcuts: jacket potatoes, rice bowls, steamed veg.</li>
+          <li>Swap freely: chickpeas ↔ beans, tuna ↔ chickpeas, spinach ↔ frozen veg.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- RESOURCES -->
+    <section id="resources" class="pageview">
+      <div class="panel">
+        <h2>Community & resources</h2>
+        <p class="lead">Find local support like community fridges, food banks, hubs, and cooking classes.</p>
+        <ul class="list">
+          <li>Ask your community hub about **community fridge** hours.</li>
+          <li>Check council websites for **local surplus shops** and food‑waste programmes.</li>
+          <li>Libraries often host **budget cooking** workshops and meal plans.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="pageview">
+      <div class="panel">
+        <h2>About this project</h2>
+        <p class="lead">Too Good To Leave is a volunteer cookbook to help reduce waste and make dinnertime easier. It’s a simple website — no logins, no tracking, and it works offline once loaded.</p>
+        <p class="sub">Want to help? Send clear, simple recipes to <a href="mailto:hello@example.com">hello@example.com</a> with ingredients, steps, and how long it takes.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Too Good To Leave
+  </footer>
+
+  <!-- recipe card template -->
+  <template id="card">
+    <article class="page">
+      <div class="badgeWrap"></div>
+      <h3 class="title"></h3>
+      <p class="meta"></p>
+      <div class="rule"></div>
+      <ul class="ingredients"></ul>
+      <p class="method"></p>
+    </article>
+  </template>
+
+  <script>
+  // ==== Simple multi‑page (hash‑router) + viewer‑only cookbook ====
+  const $ = s=>document.querySelector(s);
+  const $$ = s=>Array.from(document.querySelectorAll(s));
+
+  // Router
+  function route(){
+    const hash = location.hash || '#home';
+    $$('#mainnav a');
+    $$('.pageview').forEach(sec=> sec.classList.remove('active'));
+    const target = document.querySelector(hash);
+    if(target){ target.classList.add('active'); }
+    // set active class on nav
+    $$('nav.primary a').forEach(a=>{ a.classList.toggle('active', a.getAttribute('href')===hash); });
+    // focus search on recipes
+    if(hash==='#recipes'){ setTimeout(()=> $('#q')?.focus(), 50); }
+  }
+  window.addEventListener('hashchange', route);
+  window.addEventListener('DOMContentLoaded', route);
+
+  // Keyboard quick focus
+  document.addEventListener('keydown', e=>{ if(e.key==='/' && !['INPUT','TEXTAREA'].includes(document.activeElement.tagName)){ e.preventDefault(); if(location.hash!=='#recipes'){ location.hash='#recipes'; setTimeout(()=> $('#q')?.focus(), 60); } else { $('#q')?.focus(); } }});
+
+  // Cookbook (viewer‑only)
+  const dbFallback = [
+    {name:'Chickpea Tomato Pasta', category:'Dinner', time:20, ingredients:['pasta','tinned tomatoes','chickpeas','onion','oil'], method:'Soften onion in oil. Add tomatoes and chickpeas; simmer 10 minutes. Toss with cooked pasta and season.'},
+    {name:'Tuna Sweetcorn Rice Bowl', category:'Lunch', time:8, ingredients:['rice pouch','tuna','sweetcorn','mayonnaise'], method:'Microwave rice. Stir in drained tuna, sweetcorn and a spoon of mayo. Season and serve warm or cold.'},
+    {name:'Microwave Jacket & Beans', category:'Dinner', time:12, ingredients:['potatoes','baked beans','cheese'], method:'Microwave potato until soft. Heat beans. Split potato, add beans, sprinkle cheese.'}
+  ];
+
+  let recipes = [];
+  let query = '';
+
+  fetch('./recipes.json', { cache:'no-store' })
+    .then(async r=>{ if(!r.ok) throw 0; const data = await r.json(); recipes = normalize(data); render(); })
+    .catch(()=>{ recipes = normalize(dbFallback); render(); });
+
+  // Search (only on Recipes page)
+  $('#btnSearch').onclick = ()=>{ query = $('#q').value.trim(); render(); };
+  $('#btnClear').onclick  = ()=>{ $('#q').value=''; query=''; render(); };
+  $('#q').addEventListener('keydown', e=>{ if(e.key==='Enter'){ query = e.target.value.trim(); render(); }});
+
+  function render(){
+    const parts = query.toLowerCase().split(',').map(s=>s.trim()).filter(Boolean);
+    let list = recipes.filter(r=>{
+      if(!parts.length) return true;
+      const hay = (r.name + ' ' + (r.ingredients||[]).join(' ')).toLowerCase();
+      return parts.every(p => hay.includes(p));
+    });
+
+    const wrap = $('#results');
+    if(!wrap) return; // not on recipes page yet
+    wrap.innerHTML = '';
+    $('#empty').hidden = list.length > 0;
+
+    for(const r of list){
+      const n = $('#card').content.firstElementChild.cloneNode(true);
+      n.querySelector('.title').textContent = r.name;
+      n.querySelector('.meta').textContent  = `${r.category||'Meal'} • ${r.time||'—'} min`;
+      const ingUL = n.querySelector('.ingredients');
+      (r.ingredients||[]).forEach(x=>{ const li=document.createElement('li'); li.textContent=x; ingUL.appendChild(li); });
+
+      const p = document.createElement('span'); p.className='drop'; p.textContent=(r.method||'').slice(0,1);
+      const rest = document.createTextNode((r.method||'').slice(1));
+      const methodEl = n.querySelector('.method'); methodEl.textContent=''; methodEl.appendChild(p); methodEl.appendChild(rest);
+
+      const b = n.querySelector('.badgeWrap');
+      if((r.time||0) <= 15){ b.appendChild(badge('Quick')); }
+      const cheapWords = ['beans','oats','rice','pasta','tomatoes','potatoes'];
+      if((r.ingredients||[]).some(i=> cheapWords.some(w=> i.toLowerCase().includes(w)))) b.appendChild(badge('£ Budget'));
+
+      wrap.appendChild(n);
+    }
+  }
+
+  function badge(t){ const s=document.createElement('span'); s.className='badge'; s.textContent=t; return s; }
+  function normalize(a){ return (Array.isArray(a)?a:[]).map(r=>({
+    name: String(r.name||'').trim(), category: r.category||'Meal', time: Number(r.time||0), ingredients: (r.ingredients||[]).map(x=> String(x).toLowerCase()), method: String(r.method||'')
+  })).filter(r=> r.name && r.ingredients.length); }
+  </script>
+</body>
+</html>
